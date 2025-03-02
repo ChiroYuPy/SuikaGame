@@ -7,7 +7,7 @@ from src.math.vector_cursor import VectorCursor
 
 class Hand(VectorCursor):
     def __init__(self, start: Vector, end: Vector):
-        super().__init__(start, end, progression_function=logarithmic)
+        super().__init__(start, end, progression_function=ease_in_out_progression)
         self._cursor = 0.5
 
     def draw(self, display):

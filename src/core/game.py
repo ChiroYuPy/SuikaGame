@@ -7,20 +7,25 @@ from src.core.config import FRUIT_DROP_COOLDOWN, MAX_SIZE, MAX_GENERATION_SIZE, 
 from src.core.fruit import Fruit
 from src.core.hand import Hand
 from src.core.playbox import PlayBox
+from src.math.functions import fibonacci
 from src.math.vector import Vector
 
 
 class Game:
     def __init__(self):
+        self.running = True
         pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("Fruit Game")
         self.display = pygame.display.get_surface()
-        self.running = True
+
+        self.font = pygame.font.Font(None, 48)
+
         self.current_time = time.time()
         self.last_drop_time = self.current_time
 
-        self.playbox = PlayBox(self)
+        self.score = 0
 
+        self.playbox = PlayBox(self)
         self.hand = Hand(Vector(0, 32), Vector(self.display.get_width(), 32))
         self.handled_fruit = self.generate_fruit()
 
@@ -45,6 +50,7 @@ class Game:
                 new_position = (collision.a.position + collision.b.position) * 0.5
                 fruits_to_delete.add(collision.a)
                 fruits_to_delete.add(collision.b)
+                self.score += fibonacci(new_size)
                 if new_size <= MAX_SIZE:
                     self.playbox.addFruit(Fruit(new_position.x, new_position.y, new_size))
 
@@ -99,3 +105,9 @@ class Game:
     def draw(self):
         for ball in self.playbox.balls:
             ball.draw(self.display)
+        self.draw_uis()
+
+    def draw_uis(self):
+        score_text = self.font.render(f"{self.score}", True, (255, 255, 255))
+        score_text_rect = score_text.get_rect()
+        self.display.blit(score_text, ((self.display.get_width() - score_text_rect.width) / 2, 10))
