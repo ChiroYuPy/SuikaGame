@@ -1,0 +1,9 @@
+gravity:
+  x: 0
+  y: 1024
+window:
+  width: 540
+  height: 960
+max_size: 9
+max_generation_size: 3
+fruit_drop_cooldown: 0.5
