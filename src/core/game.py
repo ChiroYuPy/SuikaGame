@@ -4,6 +4,7 @@ import time
 import pygame
 
 from src.core.config import FRUIT_DROP_COOLDOWN, MAX_SIZE, MAX_GENERATION_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT
+from src.core.floating_text import FloatingText
 from src.core.fruit import Fruit
 from src.core.hand import Hand
 from src.core.playbox import PlayBox
@@ -18,15 +19,16 @@ class Game:
         pygame.display.set_caption("Fruit Game")
         self.display = pygame.display.get_surface()
 
-        self.font = pygame.font.Font(None, 48)
+        self.font = pygame.font.Font(None, 96)
 
         self.current_time = time.time()
         self.last_drop_time = self.current_time
 
         self.score = 0
+        self.floating_score_texts = []
 
-        self.playbox = PlayBox(self)
-        self.hand = Hand(Vector(0, 32), Vector(self.display.get_width(), 32))
+        self.playbox = PlayBox(self, limit=196)
+        self.hand = Hand(Vector(0, 128), Vector(self.display.get_width(), 128))
         self.handled_fruit = self.generate_fruit()
 
         self.key_pressed = set()
@@ -51,6 +53,10 @@ class Game:
                 fruits_to_delete.add(collision.a)
                 fruits_to_delete.add(collision.b)
                 self.score += fibonacci(new_size)
+
+                popup = FloatingText(text=f"+{fibonacci(new_size)}", x=new_position.x, y=new_position.y, color=(0, 255, 0))
+                self.floating_score_texts.append(popup)
+
                 if new_size <= MAX_SIZE:
                     self.playbox.addFruit(Fruit(new_position.x, new_position.y, new_size))
 
@@ -97,6 +103,11 @@ class Game:
             elif pygame.K_LEFT in self.key_pressed:
                 self.hand.cursor -= dt
 
+        for floating_text in self.floating_score_texts:
+            floating_text.update()
+
+        self.floating_score_texts = [floating_text for floating_text in self.floating_score_texts if not floating_text.is_expired()]
+
     def render(self):
         self.display.fill((24, 24, 24))
         self.draw()
@@ -105,9 +116,14 @@ class Game:
     def draw(self):
         for ball in self.playbox.balls:
             ball.draw(self.display)
-        self.draw_uis()
 
-    def draw_uis(self):
+        for popup in self.floating_score_texts:
+            popup.render(self.display)
+
+        self.draw_uis(self.display)
+
+    def draw_uis(self, display):
+        self.playbox.draw(display)
         score_text = self.font.render(f"{self.score}", True, (255, 255, 255))
         score_text_rect = score_text.get_rect()
-        self.display.blit(score_text, ((self.display.get_width() - score_text_rect.width) / 2, 10))
+        display.blit(score_text, ((display.get_width() - score_text_rect.width) / 2, 10))
