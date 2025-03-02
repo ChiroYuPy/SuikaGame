@@ -3,11 +3,11 @@ import time
 
 import pygame
 
-from src.config import FRUIT_DROP_COOLDOWN, MAX_SIZE, MAX_GENERATION_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT
-from src.fruit import Fruit
-from src.hand import Hand
-from src.vector import Vector
-from src.world import World
+from src.core.config import FRUIT_DROP_COOLDOWN, MAX_SIZE, MAX_GENERATION_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT
+from src.core.fruit import Fruit
+from src.core.hand import Hand
+from src.core.playbox import PlayBox
+from src.math.vector import Vector
 
 
 class Game:
@@ -19,20 +19,20 @@ class Game:
         self.current_time = time.time()
         self.last_drop_time = self.current_time
 
-        self.world = World()
+        self.playbox = PlayBox(self)
 
         self.hand = Hand(Vector(0, 32), Vector(self.display.get_width(), 32))
         self.handled_fruit = self.generate_fruit()
 
         self.key_pressed = set()
 
-        self.world.on_collision(self.merge_fruits_on_collision)
+        self.playbox.on_collision(self.merge_fruits_on_collision)
 
     def generate_fruit(self):
         position = self.hand.get_cursor_position()
         fruit = Fruit(position.x, position.y, random.randint(1, MAX_GENERATION_SIZE))
         fruit.activated = False
-        self.world.addFruit(fruit)
+        self.playbox.addFruit(fruit)
         self.hand.start.x = fruit.radius
         self.hand.end.x = self.display.get_width() - fruit.radius
         return fruit
@@ -46,10 +46,10 @@ class Game:
                 fruits_to_delete.add(collision.a)
                 fruits_to_delete.add(collision.b)
                 if new_size <= MAX_SIZE:
-                    self.world.addFruit(Fruit(new_position.x, new_position.y, new_size))
+                    self.playbox.addFruit(Fruit(new_position.x, new_position.y, new_size))
 
         for fruit in fruits_to_delete:
-            self.world.balls.remove(fruit)
+            self.playbox.balls.remove(fruit)
 
     def run(self):
         while self.running:
@@ -78,8 +78,7 @@ class Game:
         last_time = self.current_time
         self.current_time = time.time()
         dt = self.current_time - last_time
-        self.world.step(dt, iterations=4)
-        self.contain_fruits()
+        self.playbox.update(dt, iterations=4)
 
         if self.handled_fruit:
             self.handled_fruit.position = self.hand.get_cursor_position()
@@ -92,23 +91,11 @@ class Game:
             elif pygame.K_LEFT in self.key_pressed:
                 self.hand.cursor -= dt
 
-    def contain_fruits(self):
-        for fruit in self.world.balls:
-            if fruit.x < fruit.radius:
-                fruit.x = fruit.radius
-                fruit.velocity.x *= -fruit.restitution
-            elif fruit.x > self.display.get_width() - fruit.radius:
-                fruit.x = self.display.get_width() - fruit.radius
-                fruit.velocity.x *= -fruit.restitution
-            if fruit.y > self.display.get_height() - fruit.radius:
-                fruit.y = self.display.get_height() - fruit.radius
-                fruit.velocity.y *= -fruit.restitution
-
     def render(self):
         self.display.fill((24, 24, 24))
         self.draw()
         pygame.display.flip()
 
     def draw(self):
-        for ball in self.world.balls:
+        for ball in self.playbox.balls:
             ball.draw(self.display)

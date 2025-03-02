@@ -1,5 +1,5 @@
-from src.config import GRAVITY
-from src.data_structures import CollisionManifold, CollisionPair
+from src.core.config import GRAVITY
+from src.physics.data_structures import CollisionManifold, CollisionPair
 
 
 class World:
@@ -17,16 +17,19 @@ class World:
         self._callbacks.append(func)
         return func
 
-    def step(self, dt, iterations=1):
+    def update(self, dt, iterations=1):
         sub_dt = dt / iterations
         for _ in range(iterations):
-            for ball in self.balls:
-                ball.apply_acceleration(GRAVITY)
-                ball.step(sub_dt)
-            self.broad_phase()
-            self.narrow_phase()
-            for callback in self._callbacks:
-                callback(self.collisions)
+            self.step(sub_dt)
+
+    def step(self, dt):
+        for ball in self.balls:
+            ball.apply_acceleration(GRAVITY)
+            ball.step(dt)
+        self.broad_phase()
+        self.narrow_phase()
+        for callback in self._callbacks:
+            callback(self.collisions)
 
     def broad_phase(self):
         self.aabb_collisions.clear()

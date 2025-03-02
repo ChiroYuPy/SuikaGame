@@ -1,7 +1,7 @@
 import pygame
 
-from src.ball import Ball
-from src.config import MAX_SIZE
+from src.physics.ball import Ball
+from src.core.config import MAX_SIZE
 
 
 class Fruit(Ball):

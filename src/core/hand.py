@@ -1,6 +1,6 @@
 import pygame
 
-from src.vector import Vector
+from src.math.vector import Vector
 
 
 class Hand:
@@ -23,6 +23,7 @@ class Hand:
     def get_cursor_position(self):
         return self.start + (self.end - self.start) * self.cursor
 
+    # just a debug method
     def draw(self, display):
         pygame.draw.line(display, (255, 0, 0), self.start.toTuple(), self.end.toTuple(), 4)
         pygame.draw.circle(display, (0, 255, 0), self.get_cursor_position().toTuple(), 16)

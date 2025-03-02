@@ -1,7 +1,7 @@
 import dataclasses
 
-from src.fruit import Fruit
-from src.vector import Vector
+from src.core.fruit import Fruit
+from src.math.vector import Vector
 
 
 @dataclasses.dataclass

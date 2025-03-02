@@ -1,6 +1,6 @@
 import yaml
 
-from src.vector import Vector
+from src.math.vector import Vector
 
 
 class Config:
