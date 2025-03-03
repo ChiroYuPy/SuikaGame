@@ -3,7 +3,7 @@ import time
 
 import pygame
 
-from src.suika_game.config import FRUIT_DROP_COOLDOWN, MAX_SIZE, MAX_GENERATION_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT
+from src.suika_game.config import Config
 from src.suika_game.floating_text import FloatingText
 from src.suika_game.fruit import Fruit
 from src.suika_game.hand import Hand
@@ -16,7 +16,7 @@ from src.ui.label import Label
 class Game:
     def __init__(self):
         self.running = True
-        pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        pygame.display.set_mode((Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT))
         pygame.display.set_caption("Fruit Game")
         self.display = pygame.display.get_surface()
 
@@ -41,7 +41,7 @@ class Game:
 
     def generate_fruit(self):
         position = self.hand.get_cursor_position()
-        fruit = Fruit(position.x, position.y, random.randint(1, MAX_GENERATION_SIZE))
+        fruit = Fruit(position.x, position.y, random.randint(1, Config.MAX_GENERATION_SIZE))
         fruit.activated = False
         self.playbox.addFruit(fruit)
         self.hand.start.x = fruit.radius
@@ -61,7 +61,7 @@ class Game:
                 popup = FloatingText(text=f"+{fibonacci(new_size)}", x=new_position.x, y=new_position.y, color=(0, 255, 0))
                 self.floating_score_texts.append(popup)
 
-                if new_size <= MAX_SIZE:
+                if new_size <= Config.FRUIT_MAX_SIZE:
                     self.playbox.addFruit(Fruit(new_position.x, new_position.y, new_size))
 
         for fruit in fruits_to_delete:
@@ -98,7 +98,7 @@ class Game:
 
         if self.handled_fruit:
             self.handled_fruit.position = self.hand.get_cursor_position()
-        elif self.current_time > self.last_drop_time + FRUIT_DROP_COOLDOWN:
+        elif self.current_time > self.last_drop_time + Config.FRUIT_DROP_COOLDOWN:
             self.handled_fruit = self.generate_fruit()
 
         if self.handled_fruit:

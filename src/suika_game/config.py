@@ -1,35 +1,41 @@
 import yaml
-
 from src.math.vector import Vector
 
 
 class Config:
-    def __init__(self, config_file="config.yml"):
-        self.config = self.load_config(config_file)
+    WINDOW_WIDTH: int
+    WINDOW_HEIGHT: int
+    GRAVITY: Vector
+    AIR_DENSITY: float
+    FRUIT_MAX_SIZE: int
+    MAX_GENERATION_SIZE: int
+    FRUIT_DROP_COOLDOWN: float
 
-    @staticmethod
-    def load_config(config_file):
+    @classmethod
+    def load_config(cls, config_file="config.yml"):
         with open(config_file, 'r') as file:
-            return yaml.safe_load(file)
+            cls.config = yaml.safe_load(file)
 
-    def get(self, key, default=None):
-        """Retourne la valeur de la configuration pour une clé donnée."""
+        cls.load_values()
+
+    @classmethod
+    def load_values(cls):
+        cls.WINDOW_WIDTH = cls.get('window.width', 540)
+        cls.WINDOW_HEIGHT = cls.get('window.height', 960)
+        cls.GRAVITY = Vector(cls.get('gravity.x', 0), cls.get('gravity.y', 1024))
+        cls.AIR_DENSITY = cls.get('air_density', 1.225)
+        cls.FRUIT_MAX_SIZE = cls.get('max_size', 9)
+        cls.MAX_GENERATION_SIZE = cls.get('max_generation_size', 3)
+        cls.FRUIT_DROP_COOLDOWN = cls.get('fruit_drop_cooldown', 0.5)
+
+    @classmethod
+    def get(cls, key, default=None):
         keys = key.split('.')
-        value = self.config
+        value = cls.config
         for key in keys:
             value = value.get(key, {})
         return value if value else default
 
 
-config = Config()
+Config.load_config("config.yml")
 
-
-WINDOW_WIDTH = config.get("window.width", 540)
-WINDOW_HEIGHT = config.get("window.height", 960)
-
-GRAVITY = Vector(config.get('gravity.x', 0), config.get('gravity.y', 1024))
-AIR_DENSITY = config.get('air_density', 1.225)
-
-MAX_SIZE = config.get('max_size', 9)
-MAX_GENERATION_SIZE = config.get('max_generation_size', 3)
-FRUIT_DROP_COOLDOWN = config.get('fruit_drop_cooldown', 0.5)

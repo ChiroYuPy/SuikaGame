@@ -1,13 +1,13 @@
 import time
 import pygame.draw
 
-from src.suika_game.config import *
+from src.suika_game.config import Config
 from src.physics.world import World
 
 
 class PlayBox(World):
     def __init__(self, game, limit):
-        super().__init__(gravity=GRAVITY, air_density=AIR_DENSITY)
+        super().__init__(gravity=Config.GRAVITY, air_density=Config.AIR_DENSITY)
         self.game = game
         self.limit = limit
 

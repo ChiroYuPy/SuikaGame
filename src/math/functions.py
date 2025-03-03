@@ -20,6 +20,12 @@ def fibonacci(n):
             a, b = b, a + b
         return b
 
+def generate_combinations(elements):
+    num_elements = len(elements)
+    for i in range(num_elements - 1):
+        for j in range(i + 1, num_elements):
+            yield elements[i], elements[j]
+
 def get_moment_of_inertia(shape, *params):
     if shape in MOMENT_OF_INERTIA:
         return MOMENT_OF_INERTIA[shape](*params)

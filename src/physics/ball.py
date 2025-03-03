@@ -3,7 +3,7 @@ from src.math.vector import Vector
 
 
 class Ball:
-    def __init__(self, x, y, radius, mass=1, restitution=0.1):
+    def __init__(self, x, y, radius, mass=1, restitution=1, dynamic_friction=0.5, static_friction=0.5):
         self.position = Vector(x, y)
         self.velocity = Vector(0, 0)
         self.acceleration = Vector(0, 0)
@@ -13,11 +13,14 @@ class Ball:
         self.radius = radius
 
         self.mass = mass
-        self.inertia = self._get_inertia()
+        self.inv_mass = 1 / self.mass if self.mass > 0 else float('inf')
+
+        self.inertia = get_moment_of_inertia("ball", self.mass, self.radius)
+        self.inv_inertia = 1 / self.inertia if self.inertia > 0 else float('inf')
 
         self.restitution = restitution
-        self.dynamic_friction = 0.5
-        self.static_friction = 0.5
+        self.dynamic_friction = dynamic_friction
+        self.static_friction = static_friction
 
         self.activated = True
 
@@ -52,17 +55,6 @@ class Ball:
     @vy.setter
     def vy(self, value):
         self.velocity.y = value
-
-    @property
-    def inv_mass(self):
-        return 1 / self.mass if self.mass > 0 else float('inf')
-
-    @property
-    def inv_inertia(self):
-        return 1 / self.inertia if self.inertia > 0 else float('inf')
-
-    def _get_inertia(self):
-        return get_moment_of_inertia("ball", self.mass, self.radius)
 
     def step(self, dt):
         if self.activated:

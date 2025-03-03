@@ -1,5 +1,6 @@
 import math
 
+from src.math.functions import generate_combinations
 from src.math.vector import Vector
 from src.physics.collisionner import Collisionner
 from src.physics.data_structures import CollisionPair
@@ -40,35 +41,14 @@ class World:
     def step_phase(self, dt):
         for ball in self.balls:
             self.apply_gravity_force(ball)
-            self.apply_air_friction(ball)
             ball.step(dt)
 
     def apply_gravity_force(self, ball):
         ball.apply_acceleration(self.gravity)
 
-    def apply_air_friction(self, ball):
-        velocity_magnitude = ball.velocity.length()
-        if velocity_magnitude > 0:
-            drag_coefficient = ball.drag_coefficient
-            area = math.pi * (ball.radius ** 2)
-            drag_force_magnitude = 0.5 * drag_coefficient * self.air_density * area * (velocity_magnitude ** 2)
-
-            # Direction opposée à la vitesse
-            drag_force = ball.velocity.normalize() * -drag_force_magnitude
-            ball.apply_force(drag_force)
-
-    @staticmethod
-    def generate_combinations(elements):
-        num_elements = len(elements)
-        for i in range(num_elements - 1):
-            for j in range(i + 1, num_elements):
-                yield elements[i], elements[j]
-
     def broad_phase(self):
         self.aabb_collisions.clear()
-        for a in range(len(self.balls) - 1):
-            for b in range(a + 1, len(self.balls)):
-                self.aabb_collisions.append(CollisionPair(self.balls[a], self.balls[b]))
+        self.aabb_collisions.extend(CollisionPair(ball_a, ball_b) for ball_a, ball_b in generate_combinations(self.balls))
 
     def narrow_phase(self):
         self.collisions.clear()
