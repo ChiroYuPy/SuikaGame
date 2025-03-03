@@ -9,7 +9,7 @@ from src.suika_game.config import Config
 
 class Fruit(Ball):
     def __init__(self, x, y, size):
-        super().__init__(x=x, y=y, radius=size * 8 + 12, mass=size * 8 + 12, restitution=0)
+        super().__init__(x=x, y=y, radius=size * 16 + 12, mass=size * 8 + 12, restitution=0)
         self.size = size
 
     def step(self, dt):

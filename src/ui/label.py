@@ -12,8 +12,7 @@ class Label:
 
     def draw(self, display, center=False):
         text_render = self.font.render(self.text, True, (255, 255, 255))
-        text_rect = text_render.get_rect()
         if center:
-            display.blit(text_render, text_rect)
+            display.blit(text_render, text_render.get_rect(center=self.position))
         else:
-            display.blit(text_render, text_rect)
+            display.blit(text_render, text_render.get_rect(top_left=self.position))

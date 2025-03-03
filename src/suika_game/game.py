@@ -29,9 +29,13 @@ class Game:
         self.score = 0
         self.floating_score_texts = []
 
-        self.game_over_label = Label("Game Over!", self.font64)
 
-        self.playbox = PlayBox(self, limit=196)
+        self.dead = False
+
+        self.game_over_label = Label("Game Over!", self.font64)
+        self.game_over_label.set_position((Config.WINDOW_WIDTH / 2, Config.WINDOW_HEIGHT / 2))
+
+        self.playbox = PlayBox(self, limit=256)
         self.hand = Hand(Vector(0, 128), Vector(self.display.get_width(), 128))
         self.handled_fruit = self.generate_fruit()
 
@@ -94,21 +98,22 @@ class Game:
         last_time = self.current_time
         self.current_time = time.time()
         dt = self.current_time - last_time
-        self.playbox.update(dt, iterations=4)
+        if not self.dead:
+            self.playbox.update(dt, iterations=4)
 
-        if self.handled_fruit:
-            self.handled_fruit.position = self.hand.get_cursor_position()
-        elif self.current_time > self.last_drop_time + Config.FRUIT_DROP_COOLDOWN:
-            self.handled_fruit = self.generate_fruit()
+            if self.handled_fruit:
+                self.handled_fruit.position = self.hand.get_cursor_position()
+            elif self.current_time > self.last_drop_time + Config.FRUIT_DROP_COOLDOWN:
+                self.handled_fruit = self.generate_fruit()
 
-        if self.handled_fruit:
-            if pygame.K_RIGHT in self.key_pressed:
-                self.hand.cursor += dt
-            elif pygame.K_LEFT in self.key_pressed:
-                self.hand.cursor -= dt
+            if self.handled_fruit:
+                if pygame.K_RIGHT in self.key_pressed:
+                    self.hand.cursor += dt
+                elif pygame.K_LEFT in self.key_pressed:
+                    self.hand.cursor -= dt
 
-        for floating_text in self.floating_score_texts:
-            floating_text.update()
+            for floating_text in self.floating_score_texts:
+                floating_text.update()
 
         self.floating_score_texts = [floating_text for floating_text in self.floating_score_texts if not floating_text.is_expired()]
 
@@ -132,4 +137,5 @@ class Game:
         score_text_rect = score_text.get_rect()
         display.blit(score_text, ((display.get_width() - score_text_rect.width) / 2, 10))
 
-        self.game_over_label.draw(display, center=True)
+        if self.dead:
+            self.game_over_label.draw(display, center=True)
