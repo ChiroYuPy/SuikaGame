@@ -1,6 +1,6 @@
 import dataclasses
 
-from src.core.fruit import Fruit
+from src.suika_game.fruit import Fruit
 from src.math.vector import Vector
 
 
@@ -16,3 +16,4 @@ class CollisionManifold:
     b: Fruit
     normal: Vector
     depth: float
+    contact_point: Vector

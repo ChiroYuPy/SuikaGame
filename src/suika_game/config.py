@@ -26,7 +26,10 @@ config = Config()
 
 WINDOW_WIDTH = config.get("window.width", 540)
 WINDOW_HEIGHT = config.get("window.height", 960)
+
 GRAVITY = Vector(config.get('gravity.x', 0), config.get('gravity.y', 1024))
+AIR_DENSITY = config.get('air_density', 1.225)
+
 MAX_SIZE = config.get('max_size', 9)
 MAX_GENERATION_SIZE = config.get('max_generation_size', 3)
 FRUIT_DROP_COOLDOWN = config.get('fruit_drop_cooldown', 0.5)

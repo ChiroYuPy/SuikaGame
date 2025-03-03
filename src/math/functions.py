@@ -1,3 +1,6 @@
+from src.math.constants import MOMENT_OF_INERTIA
+
+
 def linear_progression(t):
     return t
 
@@ -16,3 +19,9 @@ def fibonacci(n):
         for _ in range(3, n + 1):
             a, b = b, a + b
         return b
+
+def get_moment_of_inertia(shape, *params):
+    if shape in MOMENT_OF_INERTIA:
+        return MOMENT_OF_INERTIA[shape](*params)
+    else:
+        raise ValueError(f"Shape '{shape}' is not defined in the moment of inertia dictionary.")

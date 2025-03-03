@@ -30,6 +30,9 @@ class Vector:
     def length(self):
         return (self.x ** 2 + self.y ** 2) ** 0.5
 
+    def length_squared(self):
+        return self.x ** 2 + self.y ** 2
+
     def normalize(self):
         length = self.length()
         if length == 0.0:

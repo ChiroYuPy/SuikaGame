@@ -3,13 +3,14 @@ import time
 
 import pygame
 
-from src.core.config import FRUIT_DROP_COOLDOWN, MAX_SIZE, MAX_GENERATION_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT
-from src.core.floating_text import FloatingText
-from src.core.fruit import Fruit
-from src.core.hand import Hand
-from src.core.playbox import PlayBox
+from src.suika_game.config import FRUIT_DROP_COOLDOWN, MAX_SIZE, MAX_GENERATION_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT
+from src.suika_game.floating_text import FloatingText
+from src.suika_game.fruit import Fruit
+from src.suika_game.hand import Hand
+from src.suika_game.playbox import PlayBox
 from src.math.functions import fibonacci
 from src.math.vector import Vector
+from src.ui.label import Label
 
 
 class Game:
@@ -19,13 +20,16 @@ class Game:
         pygame.display.set_caption("Fruit Game")
         self.display = pygame.display.get_surface()
 
-        self.font = pygame.font.Font(None, 96)
+        self.font96 = pygame.font.Font(None, 96)
+        self.font64 = pygame.font.Font(None, 96)
 
         self.current_time = time.time()
         self.last_drop_time = self.current_time
 
         self.score = 0
         self.floating_score_texts = []
+
+        self.game_over_label = Label("Game Over!", self.font64)
 
         self.playbox = PlayBox(self, limit=196)
         self.hand = Hand(Vector(0, 128), Vector(self.display.get_width(), 128))
@@ -124,6 +128,8 @@ class Game:
 
     def draw_uis(self, display):
         self.playbox.draw(display)
-        score_text = self.font.render(f"{self.score}", True, (255, 255, 255))
+        score_text = self.font96.render(f"{self.score}", True, (255, 255, 255))
         score_text_rect = score_text.get_rect()
         display.blit(score_text, ((display.get_width() - score_text_rect.width) / 2, 10))
+
+        self.game_over_label.draw(display, center=True)

@@ -1,14 +1,24 @@
+from src.math.functions import get_moment_of_inertia
 from src.math.vector import Vector
 
 
 class Ball:
-    def __init__(self, x, y, radius, mass=1, restitution=0):
+    def __init__(self, x, y, radius, mass=1, restitution=0.1):
         self.position = Vector(x, y)
         self.velocity = Vector(0, 0)
         self.acceleration = Vector(0, 0)
+
+        self.angle = 0
+        self.angular_velocity = 0
         self.radius = radius
+
         self.mass = mass
+        self.inertia = self._get_inertia()
+
         self.restitution = restitution
+        self.dynamic_friction = 0.5
+        self.static_friction = 0.5
+
         self.activated = True
 
     @property
@@ -47,11 +57,19 @@ class Ball:
     def inv_mass(self):
         return 1 / self.mass if self.mass > 0 else float('inf')
 
+    @property
+    def inv_inertia(self):
+        return 1 / self.inertia if self.inertia > 0 else float('inf')
+
+    def _get_inertia(self):
+        return get_moment_of_inertia("ball", self.mass, self.radius)
+
     def step(self, dt):
         if self.activated:
             if self.mass > 0:
                 self.velocity += self.acceleration * dt
             self.position += self.velocity * dt
+            self.angle += self.angular_velocity * dt
         else:
             self.velocity *= 0
         self.acceleration *= 0
