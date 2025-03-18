@@ -1,5 +1,3 @@
-import math
-
 from src.math.functions import generate_combinations
 from src.math.vector import Vector
 from src.physics.collisionner import Collisionner
