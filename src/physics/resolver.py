@@ -32,8 +32,9 @@ class Resolver:
         collision_manifold.a.velocity -= impulse * collision_manifold.a.inv_mass
         collision_manifold.b.velocity += impulse * collision_manifold.b.inv_mass
 
+    # not yet used
     @staticmethod
-    def resolve_collision_with_rotation(collision_manifold):
+    def resolve_collision_with_rotation_and_friction(collision_manifold):
         e = min(collision_manifold.a.restitution, collision_manifold.b.restitution)
 
         sf = (collision_manifold.a.static_friction + collision_manifold.b.static_friction) * 0.5
